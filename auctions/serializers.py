@@ -45,9 +45,9 @@ class BidSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['bidder', 'created_at']
 
-    def validate_amount(self, data):
+    def validate(self, data):
         request = self.context['request']
-        listing = self.context['listing']
+        listing = data['listing']
 
         listing.close_if_expired() #lazy close check happen here tooo
 
@@ -70,7 +70,7 @@ class BidSerializer(serializers.ModelSerializer):
 
         #update the current price of the listing if the bid is valid
         listing = bid.listing
-        bid.current_price = bid.amount
+        listing.current_price = bid.amount
         listing.save(update_fields=["current_price"])
 
         return bid

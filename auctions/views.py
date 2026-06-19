@@ -38,7 +38,7 @@ class BidCreateView(generics.CreateAPIView):
     serializer_class = BidSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class ListingBidListView(generics.ListAPIView):
+class ListingBidHistoryView(generics.ListAPIView):
     serializer_class = BidSerializer
     permission_classes = [permissions.IsAuthenticated]
 
