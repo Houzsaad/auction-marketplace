@@ -23,9 +23,9 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ListingSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
-    def get_queryset(self):
+    def get_object(self):
         # Filter listings to only include those owned by the authenticated user
-       obj = super(). get_object()
+       obj = super().get_object()
        obj.close_if_expired()
        return obj
 

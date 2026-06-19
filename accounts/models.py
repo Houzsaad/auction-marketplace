@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
 class UserManager(BaseUserManager):
@@ -18,7 +18,7 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, full_name, password, **extra_fields)
     
-class User(AbstractUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     class Role (models.TextChoices):
         USER = 'user', 'User'
         ADMIN = 'admin', 'Admin'
