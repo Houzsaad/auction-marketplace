@@ -48,6 +48,23 @@ class Listing(models.Model):
             self.status = self.Status.COMPLETED
             self.save(update_fields=['status', 'winner', 'current_price'])
         return self
-            
+
+
+
+class Bid(models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="bids")
+    bidder = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="bids",
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-amount']
+
+    def __str__(self):
+        return f"{self.bidder} bid {self.amount} on {self.listing.title}"
 
 # Create your models here.
