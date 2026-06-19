@@ -5,6 +5,8 @@ from .models import Listing
 from .serializers import ListingSerializer
 from vip.permissions import IsOwnerOrReadOnly
 
+from .models import Listing, Bid
+from .serializers import ListingSerializer, BidSerializer
 
 class ListingCreateView(generics.CreateAPIView):
     queryset = Listing.objects.all()
@@ -29,4 +31,22 @@ class ListingDetailView(generics.RetrieveUpdateDestroyAPIView):
        obj.close_if_expired()
        return obj
 
+
+
+
+class BidCreateView(generics.CreateAPIView):
+    serializer_class = BidSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class ListingBidListView(generics.ListAPIView):
+    serializer_class = BidSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        listing_id = self.kwargs['listing_id']
+        return Bid.objects.filter(listing_id=listing_id).order_by('-amount')
+
 # Create your views here.
+
+
+
