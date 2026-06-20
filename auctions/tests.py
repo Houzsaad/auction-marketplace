@@ -39,6 +39,7 @@ class BaseAuctionTestCse(APITestCase):
 
     def auth(self, user):
         """login as a given user and attach the token to the self.client"""
+
         response = self.client.post(
             reverse("login"),
             {"email": user.email, "password": "Test2026"},
@@ -59,7 +60,7 @@ class AuthTest(APITestCase):
         User.objects.create_user(
             email="x@gmail.com", full_name="X User", password="Test2026"
         )
-        self.assertEqual(response.status.code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
 
@@ -67,7 +68,7 @@ class AuthTest(APITestCase):
     def test_logout_block_token(self):
         User.objects.create(email="logout@gmail.com", full_name="Logot User", password="Test2026")
         login = self.client.post(reverse("login"), {
-            "email": "logot@gmail.com",
+            "email": "logout@gmail.com",
             "password": "Test2026"
         })
         access = login.data["access"]
@@ -121,17 +122,17 @@ class BiddingTests(BaseAuctionTestCse):
         response = self.client.post(reverse("bid-create"), {
             "listing": self.listing.id, "amount": 200.00
         })
-        self.asserEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         self.listing.refresh_from_db()
-        self.assertEqual(str(self.listing.current_price), 250.00)
+        self.assertEqual(str(self.listing.current_price), 200.00)
         
     def test_bid_beloow_current_price(self):
         self.auth(self.bidder)
         response = self.client.post(reverse("bid-create"), {
-            "listing": self.listing.id, "amount": 220.00
+            "listing": self.listing.id, "amount": 150.00
         })
-        self.asserEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
     def test_owner_can_bid(self):
@@ -139,20 +140,20 @@ class BiddingTests(BaseAuctionTestCse):
         response = self.client.post(reverse("bid-create"), {
             "listing": self.listing.id, "amount": 222.00
         })
-        self.asserEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_expired_listing_reject_bids(self):
         expired = Listing.objects.create(
             owner=self.owner,
             title="EXPIRED Item",
-            description="It WA EXPIRED just for testing",
+            description="It was EXPIRED just for testing",
             starting_price=10,
             current_price=10,
-            end_time=timezone.now() + timedelta(days=1)
+            end_time=timezone.now() - timedelta(days=1)
         )
         self.auth(self.bidder)
         response = self.client.post(reverse("bid-create"), {
-            "listing": expired.id, "amount": 11.00
+            "listing": expired.id, "amount": 20.00
         })
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -167,28 +168,28 @@ class BiddingTests(BaseAuctionTestCse):
         response = self.client.get(
             reverse("listing-bid-history", args=[self.listing.id])
         )
-        amounts = [bid["bids"] for bid in response.data]
-        self.asserEqual(amounts, [200.00, 120.00])
+        amounts = [bid["amount"] for bid in response.data]
+        self.assertEqual(amounts, ["120.00", "20.00"])
 
 class AuctionCompletionTests(BaseAuctionTestCse):
-    def test_highest_bidder_wins_on_expirr(self):
+    def test_highest_bidder_wins_on_expiry(self):
         listing = Listing.objects.create(
             owner=self.owner,
             title="EXPIRED Item",
-            description="It WA EXPIRED just for testing",
+            description="It was EXPIRED just for testing",
             starting_price=10,
             current_price=10,
-            end_time=timezone.now() + timedelta(days=1)
+            end_time=timezone.now() - timedelta(days=1)
         )
-        Bid.objects.create(listing=self.listing, bidder=self.bidder, amount=120)
-        Bid.objects.create(listing=self.listing, bidder=self.bidder, amount=20)
+        Bid.objects.create(listing=listing, bidder=self.bidder, amount=120)
+        Bid.objects.create(listing=listing, bidder=self.admin, amount=200)
 
         listing.close_if_expired()
         listing.refresh_from_db()
 
         self.assertEqual(listing.status, Listing.Status.COMPLETED)
         self.assertEqual(listing.winner, self.admin)
-        self.assertEqual(str(listing.current_price), 250)
+        self.assertEqual(str(listing.current_price), "200.00")
 
 
 
