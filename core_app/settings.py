@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'accounts',
     'auctions',
     'vip',
+    'drf_spectacular'
 ]
 
 REST_FRAMEWORK = {
@@ -55,6 +56,13 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Auction Marketplace API",
+    "DESCRIPTION": "Backend API for a simple auction marketplace with JWT auth, listings, and bidding",
+    "VERSION": "1.0.0"
 }
 
 from datetime import timedelta

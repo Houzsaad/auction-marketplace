@@ -6,7 +6,7 @@ from datetime import timedelta
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.contrib.auth import get_user_model
-from .models import Auction, Bid, Listing
+from .models import Bid, Listing
 
 from django.test import TestCase
 
@@ -59,13 +59,13 @@ class AuthTest(APITestCase):
         User.objects.create_user(
             email="x@gmail.com", full_name="X User", password="Test2026"
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status.code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
 
 
     def test_logout_block_token(self):
-        User.objects.create(email="logout@gmail.com", fullname="Logot User", password="Test2026")
+        User.objects.create(email="logout@gmail.com", full_name="Logot User", password="Test2026")
         login = self.client.post(reverse("login"), {
             "email": "logot@gmail.com",
             "password": "Test2026"
@@ -94,15 +94,15 @@ class ListingPermissionsTest(BaseAuctionTestCse):
     def test_owner_can_update_listing(self):
         self.auth(self.owner)
         response = self.client.patch(
-            reverse("listing-detail", args=[self.listing_id]),
-            {"title": "Update tille"}
+            reverse("listing-detail", args=[self.listing.id]),
+            {"title": "Update title"},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_ADMIN_can_update_listing(self):
         self.auth(self.admin)
         response = self.client.patch(
-            reverse("listing-detail", args=[self.listing_id]),
+            reverse("listing-detail", args=[self.listing.id]),
             {"title": "Admin has Update tille"}
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -110,7 +110,7 @@ class ListingPermissionsTest(BaseAuctionTestCse):
     def test_any_authenticated_can_view_listing(self):
         self.auth(self.bidder)
         response = self.client.patch(
-            reverse("listing-detail", args=[self.listing_id]),
+            reverse("listing-detail", args=[self.listing.id]),
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
