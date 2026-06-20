@@ -8,11 +8,11 @@ from drf_spectacular.views import (
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
-    path('auctions/', include('auctions.urls')),
+    path('api/admin/', admin.site.urls),
+    path('api/accounts/', include('accounts.urls')),
+    path('api/auctions/', include('auctions.urls')),
 
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('docs/', SpectacularSwaggerView.as_view(), name='docs'),
-    path('redoc/', SpectacularRedocView.as_view(), name='redoc')
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(), name='docs'),
+    path('api/redoc/', SpectacularRedocView.as_view(), name='redoc')
 ]
