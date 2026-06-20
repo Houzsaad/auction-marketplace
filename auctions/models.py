@@ -5,7 +5,7 @@ from django.utils import timezone
 class Listing(models.Model):
     class Status(models.TextChoices):
         ACTIVE = "active", "Active"
-        COMPELETED = "completed", "Completed"
+        COMPLETED = "completed", "Completed"
         CANCELED = "canceled", "Canceled"
 
     owner = models.ForeignKey(
