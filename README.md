@@ -11,7 +11,7 @@ This was built as a technical assessment with a focus on clean architecture, sou
 - Python 3
 - Django
 - Django REST Framework
-- SQLite (Django's default databse, more inpo below)
+- SQLite (Django's default databse, more info below)
 - JWT Authentication (`djangorestframework-simplejwt`)
 - API Docs: `drf-spectacular` (Swagger / OpenAPI)
 
@@ -42,28 +42,30 @@ Note on databse: The brief specifies PostgresSQL as the required stack. Given th
 
    Create a `.env` file in the project root:
    ```
+   SECRET_KEY =  secret key (are stored in .end)
+   DEBUG = True (for develpment, and need to be False for production)
 
-4* **Create the PostgreSQL database**
+5* **Create the PostgreSQL database**
    ```bash
    createdb auction_marketplace
    ```
 
-5. **Run migrations**
+6. **Run migrations**
    ```bash
    python manage.py migrate
    ```
 
-6. **Create a superuser (optional, for Django admin access)**
+7. **Create a superuser (optional, for Django admin access)**
    ```bash
    python manage.py createsuperuser
    ```
 
-6. **Run the development server**
+8. **Run the development server**
    ```bash
    python manage.py runserver
    ```
 
-7. **API Documentation**
+9. **API Documentation**
 
    Once running, interactive API docs are available at:
    - Swagger UI: `http://127.0.0.1:8000/api/docs/`
@@ -149,12 +151,14 @@ This lazy-check approach satisfies "manual implementation is acceptable" without
 - Cancelling a listing (`status = cancelled`) is supported in the model but does not yet have a dedicated endpoint beyond the standard `DELETE`/`PATCH`.
 
 ---
-
-## Testing
+ 
+## Testing (Ongoing, Yet to be done)
 
 Core test coverage focuses on the highest-risk logic — the parts that are genuinely "mine" to get wrong, rather than DRF's generic CRUD machinery:
 - Ownership permissions (non-owner blocked from editing, owner allowed).
 - All four bidding rules (price validation, owner-cannot-bid, expired-auction rejection, current_price updates correctly).
+
+Given more time, finishing the automated suite to pass cleanly, and using it as a regression check going forward, would be the next priority. I'd rather state this directly than present a test suite as compelet when it isn't.
 
 Run with:
 ```bash
